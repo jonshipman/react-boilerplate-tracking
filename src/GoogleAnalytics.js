@@ -1,6 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { Switch, Route, useLocation } from "react-router-dom";
 
+const DelayedEvents = [];
+
+export const GAEvent = ({ callback = () => {} }) => {
+  if ("ga" in window) {
+    callback(window.ga);
+  } else {
+    DelayedEvents.push(callback);
+  }
+
+  return null;
+};
+
+const ProcessDelayedEvents = () => {
+  if (DelayedEvents.length > 0) {
+    DelayedEvents.forEach((cb, index) => {
+      if ("ga" in window) {
+        cb(window.ga);
+        DelayedEvents.splice(index, 1);
+      }
+    });
+  }
+};
+
 // Track each page view
 const PageView = ({ codes = [] }) => {
   const { pathname } = useLocation();
@@ -9,11 +32,8 @@ const PageView = ({ codes = [] }) => {
     codes.forEach((_, index) => {
       if ("ga" in window)
         window.ga(`tracker${index}.send`, "pageview", pathname);
+      ProcessDelayedEvents();
     });
-
-    if ("ga" in window) {
-      console.log(pathname);
-    }
   }, [codes, pathname]);
 
   return null;

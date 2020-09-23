@@ -1,6 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { Switch, Route, useLocation } from "react-router-dom";
 
+const DelayedEvents = [];
+
+export const FacebookEvent = ({ callback = () => {} }) => {
+  if ("fbp" in window) {
+    callback(window.fbp);
+  } else {
+    DelayedEvents.push(callback);
+  }
+
+  return null;
+};
+
+const ProcessDelayedEvents = () => {
+  if (DelayedEvents.length > 0) {
+    DelayedEvents.forEach((cb, index) => {
+      if ("fbp" in window) {
+        cb(window.fbp);
+        DelayedEvents.splice(index, 1);
+      }
+    });
+  }
+};
+
 const NoScript = ({ code }) => {
   return (
     <noscript>
@@ -20,10 +43,10 @@ const PageView = ({ codes = [] }) => {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    if ("fbq" in window) window.fbq("track", "PageView");
-
     if ("fbq" in window) {
-      console.log(pathname);
+      pathname;
+      window.fbq("track", "PageView");
+      ProcessDelayedEvents();
     }
   }, [codes, pathname]);
 
