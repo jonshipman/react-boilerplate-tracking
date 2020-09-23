@@ -7,7 +7,7 @@
 ## Install
 
 ```bash
-npm install --save react-boilerplate-tracking
+yarn add react-boilerplate-tracking
 ```
 
 ## Usage
@@ -15,12 +15,11 @@ npm install --save react-boilerplate-tracking
 ```jsx
 import React, { Component } from 'react'
 
-import MyComponent from 'react-boilerplate-tracking'
-import 'react-boilerplate-tracking/dist/index.css'
+import { GoogleAnalytics } from 'react-boilerplate-tracking'
 
 class Example extends Component {
   render() {
-    return <MyComponent />
+    return <GoogleAnalytics ua="UA-000000-1" />
   }
 }
 ```
